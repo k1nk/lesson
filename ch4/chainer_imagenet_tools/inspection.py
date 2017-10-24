@@ -39,7 +39,7 @@ from chainer import serializers
 parser = argparse.ArgumentParser(
     description='Image inspection using chainer')
 parser.add_argument('image', help='Path to inspection image file')
-parser.add_argument('--model','-m',default='result/model_iter_5000', help='Path to model file')
+parser.add_argument('--model','-m',default='result/model_iter_4000', help='Path to model file')
 parser.add_argument('--mean', default='mean.npy',
                     help='Path to the mean file (computed by compute_mean.py)')
 args = parser.parse_args()
