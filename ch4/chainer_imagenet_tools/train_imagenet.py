@@ -29,7 +29,9 @@ import googlenet
 import googlenetbn
 import nin
 import resnet50
-
+#added
+import alex_mini
+import alex_mini2
 
 class PreprocessedDataset(chainer.dataset.DatasetMixin):
 
@@ -73,6 +75,7 @@ class PreprocessedDataset(chainer.dataset.DatasetMixin):
 
 
 def main():
+    #added alex_mini and alex_mini_fp16
     archs = {
         'alex': alex.Alex,
         'alex_fp16': alex.AlexFp16,
@@ -80,7 +83,11 @@ def main():
         'googlenetbn': googlenetbn.GoogLeNetBN,
         'googlenetbn_fp16': googlenetbn.GoogLeNetBNFp16,
         'nin': nin.NIN,
-        'resnet50': resnet50.ResNet50
+        'resnet50': resnet50.ResNet50,
+        'alex_mini': alex_mini.AlexMini,
+        'alex_mini_fp16': alex_mini.AlexMiniFp16,
+        'alex_mini2': alex_mini2.AlexMini2,
+        'alex_mini2_fp16': alex_mini2.AlexMini2Fp16
     }
 
     parser = argparse.ArgumentParser(
