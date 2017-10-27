@@ -7,6 +7,10 @@ import shutil
 def cmd(cmd):
 	return commands.getoutput(cmd)
 
+def mkdir_if_not_exists(dir):
+	if not os.path.exists(dir):
+	    os.mkdir(dir)
+
 #labels
 pwd = os.path.abspath(".")
 
@@ -17,10 +21,22 @@ labels = os.listdir(pathname)
 #make directries
 #imageDirName = "images"
 imageDirName = sys.argv[2]
-os.mkdir(imageDirName)
+imageDirNameTrain = imageDirName+"_train"
+imageDirNameCV = imageDirName+"_cv"
+imageDirNameTest = imageDirName+"_test"
+
+mkdir_if_not_exists(imageDirNameTrain)
+mkdir_if_not_exists(imageDirNameCV)
+mkdir_if_not_exists(imageDirNameTest)
+
+#os.mkdir(imageDirName)
 
 #copy images and make train.txt
-imageDir = os.path.join(pwd,imageDirName)
+#imageDir = os.path.join(pwd,imageDirName)
+imageDirTrain = os.path.join(pwd,imageDirNameTrain)
+imageDirCV = os.path.join(pwd,imageDirNameCV)
+imageDirTest = os.path.join(pwd,imageDirNameTest)
+
 train = open('train.txt','w')
 train = open('cv.txt','w')
 test = open('test.txt','w')
@@ -38,17 +54,19 @@ for label in labels:
 	startCnt=cnt
 	length = len(images)
 	for image in images:
-		imagepath = os.path.join(imageDir, "image%07d" %cnt +".jpg")
 		fromimagepath = os.path.join(workdir, image)
 		if not os.path.isfile(fromimagepath):
 			continue
-		shutil.copyfile(fromimagepath, imagepath)
 		if cnt-startCnt < length*0.6:
+			imagepath = os.path.join(imageDirTrain, "image%07d" %cnt +".jpg")
 			train.write(imagepath+" %d\n" % classNo)
 		elif: cnt-startCnt < length*0.8:
+			imagepath = os.path.join(imageDirCV, "image%07d" %cnt +".jpg")
 			cv.write(imagepath+" %d\n" % classNo)
 		else:
+			imagepath = os.path.join(imageDirTest, "image%07d" %cnt +".jpg")
 			test.write(imagepath+" %d\n" % classNo)
+		shutil.copyfile(fromimagepath, imagepath)
 		cnt += 1
 
 	classNo += 1
