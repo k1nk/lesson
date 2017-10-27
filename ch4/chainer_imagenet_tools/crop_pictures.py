@@ -15,7 +15,7 @@ def crop_pic(src,dst):
     img.astype(np.float64)
     target_shape = (256, 256)
     output_side_length=256
-    print src
+    #print src
     height, width, depth = img.shape
     new_height = output_side_length
     new_width = output_side_length
@@ -29,6 +29,15 @@ def crop_pic(src,dst):
     cropped_img = resized_img[height_offset:height_offset + output_side_length,
 width_offset:width_offset + output_side_length]
     cv2.imwrite(dst, cropped_img)
+
+def is_acceptable_ext(ext):
+    cv2_acceptable_extensions = [".jpg",".jpeg",".jpe",".jp2",".png",".webp",".bmp",".pbm",".pgm",".ppm",
+".pxm", ".pnm", ".sr", ".ras", ".tiff", ".tif", ".exr", ".hdr", ".pic", ".dib"]
+    return ext.lower() in cv2_acceptable_extensions
+
+def is_acceptable_file(src):
+    root, ext = os.path.splitext(src)
+    return is_acceptable_ext(ext)
 
 def transtree(src, dst):
     names = os.listdir(src)
@@ -44,7 +53,9 @@ def transtree(src, dst):
             if os.path.isdir(srcname):
                 transtree(srcname, dstname)
             else:
-                print "going to increase %s" % (`srcname`)
+                if not is_acceptable_file(srcname):
+                    continue
+                print "going to crop %s" % (`srcname`)
                 crop_pic(srcname, dstname)
         except (IOError, os.error) as why:
             print "Can't translate %s to %s: %s" % (`srcname`, `dstname`, str(why))
