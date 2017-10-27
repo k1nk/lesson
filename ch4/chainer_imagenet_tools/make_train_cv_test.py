@@ -38,7 +38,7 @@ imageDirCV = os.path.join(pwd,imageDirNameCV)
 imageDirTest = os.path.join(pwd,imageDirNameTest)
 
 train = open('train.txt','w')
-train = open('cv.txt','w')
+cv = open('cv.txt','w')
 test = open('test.txt','w')
 labelsTxt = open('labels.txt','w')
 
