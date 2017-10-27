@@ -155,7 +155,7 @@ def transtree(src, dst):
 
 if __name__ == '__main__':
     source_dir = sys.argv[1]
-    dest_dir =  source_dir + "_trans"
+    dest_dir =  source_dir + "_increased"
     transtree(source_dir,dest_dir)
     #for source_imgpath in os.listdir(source_dir):
     #    print source_imgpath
