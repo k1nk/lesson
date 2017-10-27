@@ -60,7 +60,7 @@ for label in labels:
 		if cnt-startCnt < length*0.6:
 			imagepath = os.path.join(imageDirTrain, "image%07d" %cnt +".jpg")
 			train.write(imagepath+" %d\n" % classNo)
-		elif: cnt-startCnt < length*0.8:
+		elif cnt-startCnt < length*0.8:
 			imagepath = os.path.join(imageDirCV, "image%07d" %cnt +".jpg")
 			cv.write(imagepath+" %d\n" % classNo)
 		else:
