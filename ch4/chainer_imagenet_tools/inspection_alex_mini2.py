@@ -64,12 +64,13 @@ def read_image(path, center=False, flip=False):
 
 import nin
 import alex
-
+import alex_mini2
 #mean_image = pickle.load(open(args.mean, 'rb'))
 mean_image = np.load(args.mean)
 
 #model = nin.NIN()
-model = alex.Alex()
+#model = alex.Alex()
+model = alex_mini2.AlexMini2()
 
 #serializers.load_hdf5("gpu1out.h5", model)
 #serializers.load_hdf5("cpu1out.h5", model)
