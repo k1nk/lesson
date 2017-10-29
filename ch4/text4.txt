@@ -1,0 +1,10 @@
+*****アマゾンEC2のURL
+https://aws.amazon.com/jp/ec2/
+
+*****PuTTY を使用した Windows から Linux インスタンスへの接続の解説ページ
+https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/putty.html?icmpid=docs_ec2_console
+
+*****WinSCPのダウンロードページ
+http://winscp.net/eng/download.php
+
+
