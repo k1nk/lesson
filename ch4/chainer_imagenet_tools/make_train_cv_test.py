@@ -17,7 +17,8 @@ pwd = os.path.abspath(".")
 dirname = sys.argv[1]
 pathname = os.path.join(pwd,dirname)
 
-labels = os.listdir(pathname)
+labels_org = os.listdir(pathname)
+labels = sorted(labels_org)
 #make directries
 #imageDirName = "images"
 imageDirName = sys.argv[2]
