@@ -126,11 +126,13 @@ if args.gpu >= 0:
 mean = np.load(args.mean)
 test = PreprocessedDataset(args.test, args.root, mean, model.insize, False)
 test_iter = chainer.iterators.SerialIterator(
-    test, args.val_batchsize, repeat=False)
+    test, args.val_batchsize, repeat=False, shuffle=False)
 reporter = Reporter()
 reporter.add_observer('test:', model)
 observation = {}
 with reporter.scope(observation):
-    ev = extensions.Evaluator(test_iter, model, device=args.gpu)
-    res = ev.evaluate()
-    print(res)
+    with chainer.using_config('train', False):
+        with chainer.no_backprop_mode():
+            ev = extensions.Evaluator(test_iter, model, device=args.gpu)
+            res = ev.evaluate()
+            print(res)
