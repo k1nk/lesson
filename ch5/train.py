@@ -47,6 +47,7 @@ parser.add_argument('--batchsize',                  type=int,   default=50)
 parser.add_argument('--epochs',                     type=int,   default=50)
 parser.add_argument('--grad_clip',                  type=int,   default=5)
 parser.add_argument('--init_from',                  type=str,   default='')
+parser.add_argument('--enable_checkpoint',          type=bool,  default=True)
 
 args = parser.parse_args()
 
@@ -119,10 +120,11 @@ for i in range(jump * n_epochs):
         #optimizer.clip_grads(grad_clip)
         optimizer.update()
 
-    if (i + 1) % 10000 == 0:
-        fn = ('%s/charrnn_epoch_%.2f.chainermodel' % (args.checkpoint_dir, float(i)/jump))
-        pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
-        pickle.dump(copy.deepcopy(model).to_cpu(), open('%s/latest.chainermodel'%(args.checkpoint_dir), 'wb'))
+    if args.enable_checkpoint:
+        if (i + 1) % 10000 == 0:
+            fn = ('%s/charrnn_epoch_%.2f.chainermodel' % (args.checkpoint_dir, float(i)/jump))
+            pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
+            pickle.dump(copy.deepcopy(model).to_cpu(), open('%s/latest.chainermodel'%(args.checkpoint_dir), 'wb'))
 
     if (i + 1) % jump == 0:
         epoch += 1
