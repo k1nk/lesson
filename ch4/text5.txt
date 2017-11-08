@@ -1,20 +1,20 @@
-﻿授業で使わないファイルの削除
-cd ~/src
-sudo rm -r cntk
-sudo rm -r torch
-sudo rm -r pytorch
+﻿cd ~
+ls -la
 
-Anadondaのインストール
-cd ~
-mkdir Downloads
-cd Downloads
-wget https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh
-md5sum Anaconda3-4.4.0-Linux-x86_64.sh
+.bashrcを編集する
+nano .bashrc
 
-bash ~/Downloads/Anaconda3-4.4.0-Linux-x86_64.sh
+最後の行に以下を付け加える
+export PATH=$HOME/src/anaconda2/bin:$PATH
 
-cd ~
+(参考)または、以下のコマンドを実行する
+echo "export PATH=\$HOME/src/anaconda2/bin:\$PATH" >> ~/.bashrc
+
+.bashrcの変更内容を反映する
 source .bashrc
+
+anaconda2の所有者を変える
+sudo chown -R ubuntu:ubuntu ~/src/anaconda2/
 
 chainer実行環境の作成
 conda create --name=chenv  python=2.7
@@ -35,7 +35,7 @@ conda install matplotlib
 h5pyのインストール
 conda install h5py
 
-cupyのインストール
+cupyのインストール（インストールに数分かかります）
 pip install cupy
 
 授業関連ファイルの取得、作業用ディレクトリへの移動
@@ -57,6 +57,10 @@ python compute_mean.py train.txt
 
 訓練を実行する
 python train_imagenet.py -E 13 -a alex_mini2  -g 0 train.txt cv.txt
+
+訓練の結果を確認する
+ls result
+cat result/log
 
 モデルをテストする
 python test_model.py test.txt -g 0 -a alex_mini2 -m result/model_iter_18000
