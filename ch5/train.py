@@ -60,6 +60,8 @@ batchsize   = args.batchsize
 bprop_len   = args.seq_length
 grad_clip   = args.grad_clip
 
+xp = cuda.cupy if args.gpu >= 0 else np
+
 train_data, words, vocab = load_data(args)
 pickle.dump(vocab, open('%s/vocab.bin'%args.data_dir, 'wb'))
 
@@ -84,18 +86,18 @@ start_at     = time.time()
 cur_at       = start_at
 state        = make_initial_state(n_units, batchsize=batchsize)
 if args.gpu >= 0:
-    accum_loss   = Variable(cuda.zeros(()))
+    accum_loss   = Variable(xp.zeros(()).astype(np.float32))
     for key, value in state.items():
         value.data = cuda.to_gpu(value.data)
 else:
-    accum_loss   = Variable(np.zeros((), dtype=np.float32))
+    accum_loss   = Variable(xp.zeros(()).astype(np.float32))
 
 print('going to train {} iterations'.format(jump * n_epochs))
 for i in range(jump * n_epochs):
-    x_batch = np.array([train_data[(jump * j + i) % whole_len]
-                        for j in range(batchsize)])
-    y_batch = np.array([train_data[(jump * j + i + 1) % whole_len]
-                        for j in range(batchsize)])
+    x_batch = xp.array([train_data[(jump * j + i) % whole_len]
+                        for j in xrange(batchsize)])
+    y_batch = xp.array([train_data[(jump * j + i + 1) % whole_len]
+                        for j in xrange(batchsize)])
 
     if args.gpu >=0:
         x_batch = cuda.to_gpu(x_batch)
@@ -113,10 +115,11 @@ for i in range(jump * n_epochs):
         #optimizer.zero_grads()
         accum_loss.backward()
         accum_loss.unchain_backward()  # truncate
-        if args.gpu >= 0:
-            accum_loss = Variable(cuda.zeros(()))
-        else:
-            accum_loss = Variable(np.zeros((), dtype=np.float32))
+        accum_loss = Variable(xp.zeros(()).astype(np.float32))
+        #if args.gpu >= 0:
+        #    accum_loss = Variable(cuda.zeros(()))
+        #else:
+        #    accum_loss = Variable(np.zeros((), dtype=np.float32))
         #optimizer.clip_grads(grad_clip)
         optimizer.update()
 
