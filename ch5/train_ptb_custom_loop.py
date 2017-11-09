@@ -128,13 +128,20 @@ def main():
         optimizer.update()  # Update the parameters
 
         if iteration % 20 == 0:
+            print('epoch: ', train_iter.epoch)
             print('iteration: ', iteration)
             print('training perplexity: ', np.exp(float(sum_perp) / count))
             sum_perp = 0
             count = 0
 
+        if iteration % 1000 == 0:
+            print('epoch: ', train_iter.epoch)
+            print('iteration: ', iteration)
+            print('validation perplexity: ', evaluate(model, val_iter))
+            
         if train_iter.is_new_epoch:
             print('epoch: ', train_iter.epoch)
+            print('iteration: ', iteration)
             print('validation perplexity: ', evaluate(model, val_iter))
 
     # Evaluate on test dataset
