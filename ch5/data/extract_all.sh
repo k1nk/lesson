@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for file in *.txt; do
+for file in $1/*.txt; do
     echo ${file}
-    nkf -d "${file}" | ./extract_text.py >> input.txt
+    nkf -d "${file}" | ./extract_text.py >> $1/input.txt
 done
