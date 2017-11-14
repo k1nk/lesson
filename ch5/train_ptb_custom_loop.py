@@ -68,8 +68,8 @@ def main():
 
     dataset, words, vocab = trn.load_data(args.data_dir)
     corpus_len = len(words)
-    train_len = int(corpus_len*0.7)
-    val_len =  int(corpus_len*0.2)
+    train_len = int(corpus_len*0.9)
+    val_len =  int(corpus_len*0.01)
     test_len = corpus_len - train_len - val_len
     train = dataset[:train_len]
     val =  dataset[train_len:train_len+val_len]

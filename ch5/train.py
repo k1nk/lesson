@@ -17,7 +17,7 @@ from CharRNN import CharRNN, make_initial_state
 import chainer.optimizer
 
 # input data
-def load_data(data_dir,file_name):
+def load_data(data_dir,file_name='input.txt'):
     vocab = {}
     #print ('%s/input.txt'% args.data_dir)
     #words = codecs.open('%s/input.txt' % args.data_dir, 'rb', 'utf-8').read()

@@ -201,8 +201,8 @@ def main():
     #train, val, test = chainer.datasets.get_ptb_words()
     dataset, words, vocab = trn.load_data(args.data_dir)
     corpus_len = len(words)
-    train_len = int(corpus_len*0.7)
-    val_len =  int(corpus_len*0.2)
+    train_len = int(corpus_len*0.9)
+    val_len =  int(corpus_len*0.01)
     test_len = corpus_len - train_len - val_len
     train = dataset[:train_len]
     val =  dataset[train_len:train_len+val_len]
@@ -242,12 +242,14 @@ def main():
 
     eval_model = model.copy()  # Model with shared params and distinct states
     eval_rnn = eval_model.predictor
+
+    interval = 10 if args.test else 500
     trainer.extend(extensions.Evaluator(
         val_iter, eval_model, device=args.gpu,
         # Reset the RNN state at the beginning of each evaluation
-        eval_hook=lambda _: eval_rnn.reset_state()))
+        eval_hook=lambda _: eval_rnn.reset_state()), trigger=(interval, 'iteration'))
 
-    interval = 10 if args.test else 500
+    #interval = 10 if args.test else 500
     trainer.extend(extensions.LogReport(postprocess=compute_perplexity,
                                         trigger=(interval, 'iteration')))
     trainer.extend(extensions.PrintReport(

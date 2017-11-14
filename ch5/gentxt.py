@@ -18,7 +18,7 @@ import chainer.links as L
 from chainer import serializers
 
 import train_ptb
-
+import train as trn
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,6 +37,7 @@ def main():
                         help='length of the generated text')
     parser.add_argument('--gpu', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--data_dir', type=str, default='data/dazai')
     args = parser.parse_args()
 
     np.random.seed(args.seed)
@@ -45,7 +46,8 @@ def main():
     xp = cuda.cupy if args.gpu >= 0 else np
 
     # load vocabulary
-    vocab = chainer.datasets.get_ptb_words_vocabulary()
+    dataset, words, vocab = trn.load_data(args.data_dir)
+    #vocab = chainer.datasets.get_ptb_words_vocabulary()
     ivocab = {}
     for c, i in vocab.items():
         ivocab[i] = c
