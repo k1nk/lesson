@@ -1,0 +1,77 @@
+実行環境の選択します。
+source activate chenv
+
+授業関連ファイルの取得
+cd ~/lesson/
+git pull
+
+（参考）前回、授業関連ファイルをダウンロードしていない場合
+cd ~
+git clone https://github.com/k1nk/lesson.git
+
+入力ファイルの内容の確認
+cd ~/lesson/ch5
+head -n 200 data/dazai/input.txt
+
+学習の実行
+python train.py --data_dir data/dazai --checkpoint_dir model/dazai --enable_checkpoint False  --gpu 0 --epochs 2  --file_name input.txt
+
+学習したモデルを使った文章の作成
+python sample.py --vocabulary data/dazai/vocab.bin --model model/dazai/latest.chainermodel --primetext '私は' --gpu 0
+
+プログラムのインストール
+sudo apt install unar
+sudo apt install nkf
+
+青空文庫作家別一括ダウンロード 
+http://keison.sakura.ne.jp/
+
+
+データのダウンロードと解凍
+cd data
+wget http://keison.sakura.ne.jp/agyou/akutagawa.zip
+unar akutagawa.zip
+mv 芥川龍之介/ akutagawa/
+ls akutagawa
+
+学習データの作成
+chmod +x extract_all.sh
+chmod +x extract_text.py
+./extract_all.sh akutagawa
+
+データの確認
+cd akutagawa
+ls -la input.txt
+tail -100 input.txt
+
+(参考)学習用データのサイズを調整
+cd akutagawa
+mv input.txt input_all.txt
+head -n 10000 input_all.txt > input.txt
+
+学習の実行
+cd ~/lesson/ch5
+mkdir model/akutagawa
+python train.py --data_dir data/akutagawa --checkpoint_dir model/akutagawa --enable_checkpoint True --gpu 0 --epochs 2 --file_name train.txt
+
+文章の作成
+ls -la model/akutagawa
+python sample.py --vocabulary data/akutagawa/vocab.bin --model model/akutagawa/latest.chainermodel --primetext '私は' --gpu 0
+
+学習の評価とテスト
+学習の実行
+python train_ptb.py  --data_dir data/akutagawa --gpu 0
+
+文章の作成
+（Ctrl+Z）で中断
+ls result
+python gentxt.py --data_dir data/akutagawa --model result/model_iter_26269 --primetext '私' --length 400 --gpu 0 --seed 112
+
+中断したjobを再開
+jobs
+fg %1
+
+学習の実行(スナップショットからの再開)
+（Ctrl+C）で中断
+ls result
+python train_ptb.py  --data_dir data/akutagawa --gpu 0 --resume result/snapshot_iter_55457  --epoch 20
