@@ -35,14 +35,19 @@ python classify_image.py
 python cropimg.py what_is_this.jpg what_is_this_cropped.jpg
 python classify_image.py --image what_is_this_cropped.jpg
 
+＊＊答えを日本語で表示
+python classify_image_jp.py --image what_is_this_cropped.jpg
+
 ＊＊カメラからの画像認識
 ノートパソコンにWEBカメラを接続します。
 
 ＊元のファイルのコピー
 copy classify_image.py classify_camera.py
+（答えを日本語表示したい場合）
+copy classify_image_jp.py classify_camera.py
 
 ＊プログラムの書き換え
-エディタのatomを立ち上げて、プログラムのmain関数を書き換えます。
+エディタのatomを立ち上げて、プログラム（classify_camera.py）のmain関数を書き換えます。
 
 import cv2
 def main(_):
