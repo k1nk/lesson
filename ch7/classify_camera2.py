@@ -160,7 +160,6 @@ def run_inference_on_image(image):
 
     # Creates node ID --> English string lookup.
     node_lookup = NodeLookup()
-
     top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
     for node_id in top_k:
       human_string = node_lookup.id_to_string(node_id)
@@ -189,26 +188,29 @@ def maybe_download_and_extract():
 
 def main(_):
   maybe_download_and_extract()
-  #image = (FLAGS.image_file if FLAGS.image_file else
-  #       os.path.join(FLAGS.model_dir, 'cropped_panda.jpg'))
   cam = cv2.VideoCapture(0)
   #cam = cv2.VideoCapture(1)
   while True:
     ret, img = cam.read()
     h = img.shape[0]
     w = img.shape[1]
-    #print(h,w) 480,640
-    img = cv2.resize(img,(160,120))
-    cv2.imshow('cam',img)
-    #run_inference_on_image(image)
+    sq_len = min(h,w)
+    h_offset = (h - sq_len) // 2
+    w_offset = (w - sq_len) // 2
+    sq_img = img[h_offset:h_offset+sq_len,w_offset:w_offset+sq_len]
+    cv2.imshow('cam',sq_img)
 
-    k = cv2.waitKey(25)
-    if k == 27:
+    sq_img_sm = cv2.resize(sq_img,(100,100))
+
+    k = cv2.waitKey(25) & 0xFF
+    if k == 27 or k == ord('q'):
+      print("--bye--")
       break
     if k == ord('s'):
-      print("-----")
-      cv2.imwrite('cam.jpg',img)
+      print("--run_inference--")
+      cv2.imwrite('cam.jpg',sq_img_sm)
       run_inference_on_image('cam.jpg')
+      print("--end run_inference--")
 
   cam.release()
   cv2.destroyAllWindows()

@@ -1,0 +1,80 @@
+＊＊作業用ディレクトリへの移動（Windows）
+cd %homepath%
+cd Lesson
+（参考）Lessonディレクトリがない場合には、
+mkdir %homepath%\Lesson
+として作業用のディレクトリを作成してから上記を実行してください。
+
+＊＊tensorenv環境の作成
+conda create --name=tensorenv python=3.5
+activate tensorenv
+
+＊＊TensorFlowのインストール
+pip install --upgrade pip
+CPU版
+pip install tensorflow
+pip install jupyter
+conda install scipy
+pip install keras
+conda install matplotlib
+conda install -c menpo opencv3
+
+＊＊授業関連ファイルの取得
+cd lesson
+git pull
+cd lesson\ch7
+
+（参考）授業関連ファイルのディレクトリがないために移動できない場合
+git clone https://github.com/k1nk/lesson.git
+cd lesson\ch7
+
+＊＊画像の認識
+python classify_image.py
+
+＊＊自分の用意した画像の認識
+python cropimg.py what_is_this.jpg what_is_this_cropped.jpg
+python classify_image.py --image what_is_this_cropped.jpg
+
+＊＊カメラからの画像認識
+ノートパソコンにWEBカメラを接続します。
+
+＊元のファイルのコピー
+copy classify_image.py classify_camera.py
+
+＊プログラムの書き換え
+エディタのatomを立ち上げて、プログラムのmain関数を書き換えます。
+
+import cv2
+def main(_):
+  maybe_download_and_extract()
+  cam = cv2.VideoCapture(0)
+  #cam = cv2.VideoCapture(1)
+  while True:
+    ret, img = cam.read()
+    h = img.shape[0]
+    w = img.shape[1]
+    sq_len = min(h,w)
+    h_offset = (h - sq_len) // 2
+    w_offset = (w - sq_len) // 2
+    sq_img = img[h_offset:h_offset+sq_len,w_offset:w_offset+sq_len]
+    cv2.imshow('cam',sq_img)
+
+    sq_img_sm = cv2.resize(sq_img,(100,100))
+
+    k = cv2.waitKey(25) & 0xFF
+    if k == 27 or k == ord('q'):
+      print("--bye--")
+      break
+    if k == ord('s'):
+      print("--run_inference--")
+      cv2.imwrite('cam.jpg',sq_img_sm)
+      run_inference_on_image('cam.jpg')
+      print("--end run_inference--")
+
+  cam.release()
+  cv2.destroyAllWindows()
+
+＊ビデオ画像の認識
+python classify_camera.py
+又は、
+python classify_camera2.py
