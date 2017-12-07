@@ -1,0 +1,137 @@
+
+**RealVNC Viewer
+https://www.realvnc.com/en/connect/download/viewer/
+
+(参考)7-Zip
+https://sevenzip.osdn.jp/
+
+
+**ウェブカメラのテスト
+cd ~/Lesson
+sudo apt-get install fswebcam
+fswebcam image.jpg
+fswebcam -r 1280x720 --no-banner image2.jpg
+
+
+**音声出力先の設定
+sudo raspi-config
+speaker-test -t sine -f 1000
+speaker-test -t wav
+
+**依存関係のあるパッケージのインストール
+sudo apt-get update
+sudo apt-get install build-essential cmake pkg-config
+sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
+sudo apt-get install libxvidcore-dev libx264-dev
+sudo apt-get install libgtk2.0-dev
+sudo apt-get install libatlas-base-dev gfortran
+sudo apt-get install python2.7-dev python3-dev
+
+**OpenCVのソースコードのダウンロード
+cd ~/Lesson
+wget -O opencv.zip https://github.com/Itseez/opencv/archive/3.1.0.zip
+unzip opencv.zip
+wget -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/3.1.0.zip
+unzip opencv_contrib.zip
+
+**pipのインストール
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python get-pip.py
+
+**virtualenvのインストール
+sudo pip install virtualenv virtualenvwrapper
+sudo rm -rf ~/.cache/pip
+
+***~/.profileの最後の行に以下を追加します
+# virtualenv and virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+***変更を反映させます。
+source ~/.profile
+
+***仮想環境の作成
+mkvirtualenv cv -p python2
+
+**OpenCVのインストール
+***仮想環境に入る
+source ~/.profile
+workon cv
+
+***numpyのインストール
+pip install numpy
+
+***OpenCVのコンパイル
+cd ~/Lesson/opencv-3.1.0/
+mkdir build
+cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D OPENCV_EXTRA_MODULES_PATH=~/Lesson/opencv_contrib-3.1.0/modules \
+    -D ENABLE_PRECOMPILED_HEADERS=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+make -j4
+
+***OpenCVのインストール・共有ライブラリの依存関係情報を更新
+sudo make install
+sudo ldconfig
+
+*************************************
+
+***仮想環境内からのリンクの作成
+ls -l /usr/local/lib/python2.7/site-packages/
+cd ~/.virtualenvs/cv/lib/python2.7/site-packages/
+ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
+
+***OpenCVインストールの確認
+source ~/.profile 
+workon cv
+python
+>>> import cv2
+>>> cv2.__version__
+'3.1.0'
+>>>quit()
+
+*************************************
+
+**TensorFlowのインストール
+wget https://github.com/samjabrahams/tensorflow-on-raspberry-pi/releases/download/v1.1.0/tensorflow-1.1.0-cp27-none-linux_armv7l.whl
+pip install tensorflow-1.1.0-cp27-none-linux_armv7l.whl
+
+**Kerasのインストール
+pip install keras
+
+**h5pyのインストール
+sudo apt-get install libhdf5-dev
+pip install h5py
+
+**PILのインストール
+pip install Pillow
+
+*************************************
+画像データを集める
+
+**フォト蔵
+http://photozou.jp/
+
+**フォト蔵APIの仕様
+http://photozou.jp/basic/api
+
+**search_public API
+http://photozou.jp/basic/api_method_search_public
+
+**実行用のツールのダウンロード
+cd lesson
+git pull
+cd lesson/ch8
+
+**モジュールのインストール
+activate tensorenv
+conda install urllib3
+conda install beautifulsoup4
+conda install requests
+
+**写真のダウンロード
+python phototkura_downloader.py "青リンゴ" green_apple_kura
