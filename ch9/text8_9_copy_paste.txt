@@ -1,0 +1,327 @@
+
+**RealVNC Viewer
+https://www.realvnc.com/en/connect/download/viewer/
+
+(参考)7-Zip
+https://sevenzip.osdn.jp/
+
+**ウェブカメラのテスト
+cd ~/Lesson
+sudo apt-get install fswebcam
+fswebcam image.jpg
+fswebcam -r 1280x720 --no-banner image2.jpg
+
+
+**音声出力先の設定
+sudo raspi-config
+speaker-test -t sine -f 1000
+speaker-test -t wav
+
+**依存関係のあるパッケージのインストール
+sudo apt-get update
+sudo apt-get install build-essential cmake pkg-config
+sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
+sudo apt-get install libxvidcore-dev libx264-dev
+sudo apt-get install libgtk2.0-dev
+sudo apt-get install libatlas-base-dev gfortran
+sudo apt-get install python2.7-dev python3-dev
+
+**OpenCVのソースコードのダウンロード
+cd ~/Lesson
+wget -O opencv.zip https://github.com/Itseez/opencv/archive/3.1.0.zip
+unzip opencv.zip
+wget -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/3.1.0.zip
+unzip opencv_contrib.zip
+
+**pipのインストール
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python get-pip.py
+
+**virtualenvのインストール
+sudo pip install virtualenv virtualenvwrapper
+sudo rm -rf ~/.cache/pip
+
+***~/.profileの最後の行に以下を追加します
+# virtualenv and virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+***変更を反映させます。
+source ~/.profile
+
+***仮想環境の作成
+mkvirtualenv cv -p python2
+
+**OpenCVのインストール
+***仮想環境に入る
+source ~/.profile
+workon cv
+
+***numpyのインストール
+pip install numpy
+
+***OpenCVのコンパイル
+cd ~/Lesson/opencv-3.1.0/
+mkdir build
+cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D OPENCV_EXTRA_MODULES_PATH=~/Lesson/opencv_contrib-3.1.0/modules \
+    -D ENABLE_PRECOMPILED_HEADERS=OFF \
+    -D BUILD_EXAMPLES=OFF ..
+make -j4
+
+***OpenCVのインストール・共有ライブラリの依存関係情報を更新
+sudo make install
+sudo ldconfig
+
+***仮想環境内からのリンクの作成
+ls -l /usr/local/lib/python2.7/site-packages/
+cd ~/.virtualenvs/cv/lib/python2.7/site-packages/
+ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
+
+***OpenCVインストールの確認
+source ~/.profile 
+workon cv
+python
+>>> import cv2
+>>> cv2.__version__
+'3.1.0'
+>>>quit()
+
+**TensorFlowのインストール
+wget https://github.com/samjabrahams/tensorflow-on-raspberry-pi/releases/download/v1.1.0/tensorflow-1.1.0-cp27-none-linux_armv7l.whl
+pip install tensorflow-1.1.0-cp27-none-linux_armv7l.whl
+
+**Kerasのインストール
+pip install keras
+
+**h5pyのインストール
+sudo apt-get install libhdf5-dev
+pip install h5py
+
+**PILのインストール
+pip install Pillow
+
+**InceptionV3のインストール
+git clone https://github.com/fchollet/deep-learning-models.git
+
+**画像認識を行う
+cd deep-learning-models
+wget https://upload.wikimedia.org/wikipedia/commons/6/63/African_elephant_warning_raised_trunk.jpg -O elephant.jpg
+python inception_v3.py
+
+**画像をダウンロードして、認識させてみる
+wget ＜画像のURL＞ -O elephant.jpg
+python inception_v3.py
+
+**ウエブカメラで読み込んだ画像の内容を表示するように書き換える
+**元のファイルをコピーして編集
+cp inception_v3.py answerthings.py
+nano answerthings.py
+
+**answerthings.pyの一部を書き換える
+#####
+import cv2
+if __name__ == '__main__':
+    model = InceptionV3(include_top=True, weights='imagenet')
+    cam = cv2.VideoCapture(0)
+    print("Start")
+
+    while(True):
+        ret, frame = cam.read()
+        cv2.imshow("Show FLAME Image", frame)
+
+        k = cv2.waitKey(1)
+        if k == ord('s'):
+            cv2.imwrite("output.png", frame)
+            # img_path = 'elephant.jpg'
+            img_path = "output.png"
+            img = image.load_img(img_path, target_size=(299, 299))
+            x = image.img_to_array(img)
+            x = np.expand_dims(x, axis=0)
+
+            x = preprocess_input(x)
+            preds = model.predict(x)
+            recognize = decode_predictions(preds)
+            #print('Predicted:', decode_predictions(preds))
+            print('Label:', recognize[0][0][1])
+
+        elif k == ord('q'):
+            break
+    cam.release()
+    cv2.destroyAllWindows()
+#####
+
+**英語ラベルを発話できるようにする
+sudo apt-get install espeak
+jack_control start
+pulseaudio --start
+espaek “Hello”
+
+**ウエブカメラで読み込んだ画像の内容を発話するように書き換える
+**元のファイルをコピーして編集
+cp answerthings.py speakthings.py
+nano speakthings.py
+
+**speakthings.pyを以下のように書き換える
+# linuxコマンドを使うためにsubprocessをインポート
+import subprocess
+
+# ４２２行目以降に以下を追記
+speak = "This is a " + recognize[0][0][1]
+subprocess.check_output(["espeak", "-k5", "-s150", speak])
+
+**ウエブカメラで読み込んだ画像の内容を日本語で発話するようにする
+**英語ラベルを日本語に変換
+**変換用のラベルをダウンロード
+git clone https://gist.github.com/PonDad/4dcb4b242b9358e524b4ddecbee385e9
+cd 4dcb4b242b9358e524b4ddecbee385e9
+
+**以下のプログラムを使って変換できるかテスト
+nano app.py
+
+**以下のプログラムを入力して保存
+
+###app.py###
+import sys
+import json
+
+with open('imagenet_class_index.json', 'r') as f:
+  obj = json.load(f)
+  for i in obj:
+    if i['en'] == sys.argv[1]:
+        print(i['ja'])
+
+**変換のテスト
+python app.py goldfish
+
+**日本語を発声するプログラムをインストール
+sudo apt-get install open-jtalk open-jtalk-mecab-naist-jdic hts-voice-nitech-jp-atr503-m001
+        
+**発声に使う音声ファイル（.htsvoice）をダウンロードし、抽出します。
+wget https://sourceforge.net/projects/mmdagent/files/MMDAgent_Example/MMDAgent_Example-1.6/MMDAgent_Example-1.6.zip/download -O MMDAgent_Example-1.6.zip
+unzip MMDAgent_Example-1.6.zip MMDAgent_Example-1.6/Voice/*
+
+**抽出した音声ファイルを設置します。
+sudo cp -r MMDAgent_Example-1.6/Voice/mei/ /usr/share/hts-voice
+
+**与えられた日本語を発声するプログラムを作成
+nano jtalk.py
+
+**以下のプログラムを入力して保存
+###jtalk.py
+#coding: utf-8
+import subprocess
+from datetime import datetime
+
+def jtalk(t):
+    open_jtalk=['open_jtalk']
+    mech=['-x','/var/lib/mecab/dic/open-jtalk/naist-jdic']
+    htsvoice=['-m','/usr/share/hts-voice/mei/mei_normal.htsvoice']
+    speed=['-r','1.0']
+    outwav=['-ow','open_jtalk.wav']
+    cmd=open_jtalk+mech+htsvoice+speed+outwav
+    c = subprocess.Popen(cmd,stdin=subprocess.PIPE)
+    c.stdin.write(t)
+    c.stdin.close()
+    c.wait()
+    aplay = ['aplay','-q','open_jtalk.wav']
+    wr = subprocess.Popen(aplay)
+
+def say_datetime():
+    d = datetime.now()
+    text = '%s月%s日、%s時%s分%s秒' % (d.month, d.day, d.hour, d.minute, d.second)
+    jtalk(text)
+
+if __name__ == '__main__':
+    say_datetime()
+
+***日本語を発声するかテスト
+***パラメータを与えない場合には、時刻を発声する
+python jtalk.py
+
+**ウエブカメラで読み込んだ画像の内容を日本語で発話するように書き換える
+**元のファイルをコピーして編集
+cp speakthings.py speakzou.py
+nano speakzou.py
+
+**speakzou.pyの一部を書き換える
+###speakzou.py
+import subprocess
+import json
+import sys
+import jtalk
+
+def en_to_ja(en_text):
+    with open('imagenet_class_index_with_ja.json', 'r') as f:
+        obj = json.load(f)
+        for i in obj:
+            if i['en'] == en_text:
+                return i['ja']
+    return ""
+
+if __name__ == '__main__':
+    model = InceptionV3(include_top=True, weights='imagenet')
+    cam = cv2.VideoCapture(0)
+    print("Start")
+
+    while(True):
+        ret, frame = cam.read()
+        cv2.imshow("Show FLAME Image", frame)
+
+        k = cv2.waitKey(1)
+        if k == ord('s'):
+            cv2.imwrite("output.png", frame)
+            # img_path = 'elephant.jpg'
+            img_path = "output.png"
+            img = image.load_img(img_path, target_size=(299, 299))
+            x = image.img_to_array(img)
+            x = np.expand_dims(x, axis=0)
+
+            x = preprocess_input(x)
+            preds = model.predict(x)
+            recognize = decode_predictions(preds)
+            recognize_rabel = recognize[0][0][1]
+            recognize_rabel_ja = en_to_ja(recognize_rabel)
+            ja_text_to_speak = u'これは' + recognize_rabel_ja + u'だよ'
+            jtalk.jtalk(ja_text_to_speak.encode('utf-8'))
+            # print('Predicted:', decode_predictions(preds))
+            # print('Label:', recognize[0][0][1])
+
+            #speak = "This is a " + recognize[0][0][1]
+            #subprocess.check_output(["espeak", "-k5", "-s150", speak])
+            #print(speak)
+
+        elif k == ord('q'):
+            break
+    cam.release()
+    cv2.destroyAllWindows()
+
+*************************************
+画像データを集める
+
+**フォト蔵
+http://photozou.jp/
+
+**フォト蔵APIの仕様
+http://photozou.jp/basic/api
+
+**search_public API
+http://photozou.jp/basic/api_method_search_public
+
+**実行用のツールのダウンロード
+cd lesson
+git pull
+cd lesson/ch8
+
+**モジュールのインストール
+activate tensorenv
+conda install urllib3
+conda install beautifulsoup4
+conda install requests
+
+**写真のダウンロード
+python phototkura_downloader.py "青リンゴ" green_apple_kura
