@@ -1,0 +1,80 @@
+・tensorenv環境に入る
+ノートパソコンでanaconda promptを立ち上げる
+activate tensorenv
+
+・実行用のツールのダウンロード
+cd %homepath%
+cd Lesson/lesson
+git pull
+cd ch12
+
+・実際に写真をとる
+今回は、サンプル写真の画像（リンゴと缶コーヒー）があります。
+
+一度、サインプル画像で行った後で、自分で区別したいものの写真をとっても結構です。
+
+自分で写真を撮る方は、Windows１０付属の「Windowsカメラ」を利用してもよいと思います。
+インストールされていない場合には、以下から入手できます。
+https://www.microsoft.com/ja-jp/store/p/windows-%E3%82%AB%E3%83%A1%E3%83%A9/9wzdncrfjbbg?rtc=1
+
+あるいは、スマートフォンで写真を撮って、PCへ取り込んでも結構です。
+
+・画像のサイズを調整する
+python crop_pictures3.py images
+
+・エフェクトをかけて画像を増やす
+python increase_pictures3.py images_cropped
+
+・回転させて画像を増やす
+python rotate_pictures.py images_cropped_trans
+
+・集めた画像を訓練データと検証用データにわける
+
+conda install scikit-learn
+conda install pillow
+conda install h5py
+conda install matplotlib
+
+python makedata.py images_cropped_trans_rotate apple BOSS GEORGIA UCC WONDA
+
+・学習の実行
+python train_keras.py 5
+
+・画像の認識（PC上で）
+python predict_keras.py test0.jpg
+python predict_keras.py test1.jpg
+python predict_keras.py test2.jpg
+python predict_keras.py test3.jpg
+python predict_keras.py test4.jpg
+
+・Respberry Piへのモデルのコピー
+
+model.h5
+ac_checker.py
+train_keras.py
+
+を「/home/pi/lesson/deep-learning-models」へアップロードします。
+テキストに従って、WinSCPを使いアップロードを行って下さい。
+※train_keras.py、ac_checker.pyがすでにRespberry Pi上にある場合でも、最新版を使うために上書きしてアップロードして下さい。
+
+・Raspberry Piでリンゴとコーヒーの種類を見分ける
+VNCビューワーでRaspberry piに接続します。端末を立ち上げます。
+
+source ~/.profile
+workon cv
+cd ~/Lesson/deep-learning-models
+python ac_checker.py
+
+画像が前面に表示された状態で、
+「s」キーを押すと、認識を開始します。
+「q」キーを押すと、終了します。
+
+*************************************
+クラス内コンペティションのURL
+https://www.kaggle.com/c/fashion-mnist-challenge/
+
+クラス内コンペティション参加のURL（下記のURLにアクセスして、ログインしてください。）
+https://www.kaggle.com/t/70656905f716451484ae4bcc93de5cf8
+
+提出ファイル作成用サンプルプログラム
+https://www.kaggle.com/kenichinakatani/fashon-mnist-with-cnn
