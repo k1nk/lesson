@@ -1,0 +1,58 @@
+アマゾンEC2
+https://aws.amazon.com/jp/ec2/
+
+EC2上にtensorenv環境を作成します。
+conda create --name=tensorenv python=2.7
+
+tensorenv環境に入ります
+source activate tensorenv
+
+環境内にtensorflow（GPU版）をインストールします。
+conda install tensorflow-gpu
+
+環境内にkeras（GPU版）をインストールします。
+conda install keras-gpu
+
+作業用ディレクトリの作成、ツールの取得
+cd ~
+mkdir Lesson
+cd Lesson
+git clone https://github.com/k1nk/tools.git
+mkdir LSTM
+cd LSTM
+
+データの取得
+git clone https://github.com/angular/angular.js.git
+cp ../tools/mkextdata.py .
+
+学習用データの作成
+python mkextdata.py angular.js
+head -n 10000 all.js > input.js
+head -n 2000 all.html > input.html
+
+学習および予測
+cp ../tools/lstm_text_generation.py .
+python lstm_text_generation.py input.js
+python lstm_text_generation.py input.html
+
+（オプション）CSS/md/jsonの学習
+python lstm_text_generation.py all.css
+python lstm_text_generation.py all.md
+python lstm_text_generation.py all.json
+
+（参考）他のプロジェクトからのデータの取得
+https://github.com/explore
+
+（参考）wgetによるデータの取得
+wget --recursive --level inf --random-wait --no-parent -Q1m --output-document=msn1m.html www.msn.com
+wget --recursive --level inf --random-wait --no-parent -Q1m --no-check-certificate --output-document=yahoo_com.html www.yahoo.com
+
+*************************************
+クラス内コンペティションのURL
+https://www.kaggle.com/c/fashion-mnist-challenge/
+
+クラス内コンペティション参加のURL（下記のURLにアクセスして、ログインしてください。）
+https://www.kaggle.com/t/70656905f716451484ae4bcc93de5cf8
+
+提出ファイル作成用サンプルプログラム
+https://www.kaggle.com/kenichinakatani/fashon-mnist-with-cnn
