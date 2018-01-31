@@ -1,0 +1,51 @@
+アマゾンEC2
+https://aws.amazon.com/jp/ec2/
+
+ツールの取得
+cd ~/Lesson/tools
+git pull
+cd ..
+
+(参考：前回の授業を欠席した人)
+cd ~
+mkdir Lesson
+cd Lesson
+git clone https://github.com/k1nk/tools.git
+
+jupyterの設定
+jupyter notebook --generate-config
+python -c 'from notebook.auth import passwd;print(passwd())'
+＜任意のパスワードを２回入力＞
+＜sha1:＊＊＊＊＊＊＊＊　とパスワードのハッシュ値が表示されます＞
+
+nano ~/.jupyter/jupyter_notebook_config.py
+＜Ctrl+w,Ctrl+v で設定ファイルの最下部に移動し、以下の設定をコピー＆ペーストします＞
+
+c.IPKernelApp.pylab = 'inline'
+c.NotebookApp.ip = '*'
+c.NotebookApp.open_browser = False
+c.NotebookApp.port = 8888
+c.NotebookApp.password = u'sha1:上記のハッシュ値'
+
+＜Ctrl+o,enter＞ファイルの保存
+＜Ctrl+x＞nanoの終了
+
+AWSのファイアウオールの設定
+テキストにしたがって、インスタンスのファイアウオールを設定します。
+インバウンドのTCPポート8888番を許可します。
+
+jupyter notebookの起動（バックグラウンド）
+jupyter notebook &
+
+jupyter notebookへのアクセス（ノートPCのブラウザから）
+http://(インスタンスのパブリックDNS):8888/
+
+*************************************
+クラス内コンペティションのURL
+https://www.kaggle.com/c/fashion-mnist-challenge/
+
+クラス内コンペティション参加のURL（下記のURLにアクセスして、ログインしてください。）
+https://www.kaggle.com/t/70656905f716451484ae4bcc93de5cf8
+
+提出ファイル作成用サンプルプログラム
+https://www.kaggle.com/kenichinakatani/fashon-mnist-with-cnn
