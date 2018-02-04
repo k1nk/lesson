@@ -1,0 +1,48 @@
+アマゾンEC2
+https://aws.amazon.com/jp/ec2/
+
+ツールの取得
+cd ?/Lesson/tools
+git pull
+
+（参考　前回の事業を欠席している人は上記の変わりに、以下の通り行って下さい）
+cd ?
+mkdir Lesson
+cd Lesson
+git clone https://github.com/k1nk/tools.git
+cd tools
+
+Jubatus のインストール
+sudo nano /etc/apt/sources.list.d/jubatus.list
+
+以下の行を /etc/apt/sources.list.d/jubatus.list に記述します。
+deb http://download.jubat.us/apt/ubuntu/xenial binary/
+
+ファイルを(Ctrl+oで)保存します。Ctrl+x でnanoを終了します。
+
+jubatus のパッケージをインストール
+sudo apt-get update
+sudo apt-get install jubatus
+
+スクリプトから環境変数を読み込む
+source /opt/jubatus/profile
+
+Jubatus クライアントのインストール
+pip install jubatus
+
+データのダウンロード
+cd ?/Lesson/tools/jubatus
+wget http://kdd.ics.uci.edu/databases/kddcup99/kddcup.data_10_percent.gz
+gunzip kddcup.data_10_percent.gz
+mv kddcup.data_10_percent kddcup.data_10_percent.txt
+
+プログラムの実行
+Jubatus サーバ
+jubaanomaly --configpath config.json &
+
+Jubatus クライアント
+python anomaly.py
+
+プログラムの終了方法
+jobs
+kill #1
